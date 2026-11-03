@@ -24,7 +24,6 @@ A web application and machine learning pipeline that classifies college student 
 17. [Future Work](#17-future-work)
 18. [Troubleshooting](#18-troubleshooting)
 19. [Acknowledgements and Attribution](#19-acknowledgements-and-attribution)
-20. [Author](#20-author)
 
 ---
 
@@ -657,15 +656,6 @@ This project is derived from the open-source repository [Student-Feedback-Sentim
 ### Licence
 
 No licence file found in the repository.
-
----
-
-## 20. Author
-
-- **Student Name**: [Your name]
-- **Course**: [Course]
-- **Department / College**: [College]
-- **Date**: [Date]
 
 ---
 *Last updated: 2026-11-03*
