@@ -23,7 +23,6 @@ A web application and machine learning pipeline that classifies college student 
 16. [Limitations](#16-limitations)
 17. [Future Work](#17-future-work)
 18. [Troubleshooting](#18-troubleshooting)
-19. [Acknowledgements and Attribution](#19-acknowledgements-and-attribution)
 
 ---
 
@@ -632,30 +631,6 @@ Configuration in `pytest.ini` automatically sets the Python path to the project 
 | `LookupError: Resource punkt_tab not found` | NLTK data download was interrupted or blocked. | Run `python -c "import nltk; nltk.download('punkt'); nltk.download('wordnet'); nltk.download('stopwords')"` |
 | `Address already in use (Port 5000)` | Another application or previous Flask process is running on port 5000. | Set a different port via environment variable: `$env:PORT="5001"; python app.py` (PowerShell) or `PORT=5001 python app.py` (Linux/macOS). |
 | `This CSV does not have enough columns` | Uploaded CSV has 2 or fewer columns. | Ensure the uploaded CSV is an unedited export from Google Forms with individual question columns. |
-
----
-
-## 19. Acknowledgements and Attribution
-
-This project is derived from the open-source repository [Student-Feedback-Sentiment-Analysis](https://github.com/) (originally developed for student feedback analysis at UIET, Panjab University).
-
-### Reused Components
-- The six labeled training datasets (`feedback1.json` through `feedback6.json`).
-- The sample feedback questionnaire (`samples/form.pdf`).
-- The core category structure and domain keywords.
-- Legacy screenshots (`images/1.png`, `images/2.png`, `images/3.png`, `images/flow.PNG`, `images/results.PNG`).
-
-### New and Modernized Components
-- Modular architecture: introduced `config.py`, `preprocess.py`, `train.py`, and `pytest.ini`.
-- Preprocessing engine: added NLTK WordNet lemmatization, stopword management, and negation binding.
-- Machine learning upgrade: replaced repetitive runtime Naive Bayes retraining with persistent Scikit-Learn pipelines (`LinearSVC` and `LogisticRegression`) trained using 5-fold cross-validation.
-- Security and robustness: implemented in-memory stream processing, PII redaction, path traversal protection, and HTTP 400 error handling.
-- UI redesign: replaced server-side Matplotlib chart generation with Chart.js, added drag-and-drop file upload, dark mode support, and CSV export.
-- Complete automated test suite (`tests/test_analysis.py`).
-
-### Licence
-
-No licence file found in the repository.
 
 ---
 *Last updated: 2026-11-03*
