@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Results · Student Feedback Sentiment Analysis{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<section class="hero results-hero">
+    <h1>Analysis results</h1>
+    <p class="lede">
+        {{ results.row_count }} responses in the file.
+        {{ results.blank_skipped }} blank responses skipped.
+        Overall sentiment score
+        <strong>{{ results.overall_score }}</strong>
+        <span class="sr-only">(positive minus negative, as a percentage of classified answers)</span>.
+    </p>
+    <div class="actions no-print">
+        <button type="button" class="btn btn-primary" id="download-csv">Download results (CSV)</button>
+        <button type="button" class="btn btn-ghost" onclick="window.print()">Print / Save as PDF</button>
+        <a class="btn btn-ghost" href="{{ url_for('display') }}">Analyse another file</a>
+    </div>
+</section>
+
+<section class="summary-grid" aria-label="Overall counts">
+    <article class="stat positive">
+        <h2>Positive</h2>
+        <p class="stat-num">{{ results.overall_counts.positive }}</p>
+    </article>
+    <article class="stat neutral">
+        <h2>Neutral</h2>
+        <p class="stat-num">{{ results.overall_counts.neutral }}</p>
+    </article>
+    <article class="stat negative">
+        <h2>Negative</h2>
+        <p class="stat-num">{{ results.overall_counts.negative }}</p>
+    </article>
+</section>
+
+<section class="panel" aria-labelledby="compare-heading">
+    <h2 id="compare-heading">Overall comparison</h2>
+    <canvas id="compare-chart" height="180" aria-label="Stacked sentiment counts for each category"></canvas>
+</section>
+
+{% if results.needs_attention %}
+<section class="panel attention" aria-labelledby="attention-heading">
+    <h2 id="attention-heading">Needs attention</h2>
+    <p>Categories with the highest share of negative comments:</p>
+    <ul>
+        {% for item in results.needs_attention %}
+        <li>
+            <strong>{{ item.name }}</strong>
+            — {{ item.negative }} negative
+            ({{ item.percent }}% of {{ item.total }} non-blank answers)
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+<section class="category-grid">
+    {% for cat in results.categories %}
+    <article class="panel category-card" id="cat-{{ cat.id }}">
+        <h2>{{ cat.name }}</h2>
+        <p class="cat-counts">
+            <span class="tag positive">Positive {{ cat.positive }} ({{ cat.percent.positive }}%)</span>
+            <span class="tag neutral">Neutral {{ cat.neutral }} ({{ cat.percent.neutral }}%)</span>
+            <span class="tag negative">Negative {{ cat.negative }} ({{ cat.percent.negative }}%)</span>
+        </p>
+        <p class="hint">{{ cat.total }} non-blank answers · {{ cat.blanks }} blank skipped · column “{{ cat.column }}”</p>
+        <div class="chart-wrap">
+            <canvas id="chart-{{ cat.id }}" aria-label="Doughnut chart for {{ cat.name }}"></canvas>
+        </div>
+        <h3>Keywords</h3>
+        <dl class="keywords">
+            {% for label in results.labels %}
+            <div>
+                <dt class="tag {{ label }}">{{ label|capitalize }}</dt>
+                <dd>{% if cat.keywords[label] %}{{ cat.keywords[label]|join(', ') }}{% else %}—{% endif %}</dd>
+            </div>
+            {% endfor %}
+        </dl>
+        <h3>Example comments</h3>
+        <ul class="examples">
+            {% for ex in cat.examples %}
+            <li>
+                <span class="tag {{ ex.label }}">{{ ex.label }}</span>
+                {% if ex.uncertain %}<span class="tag uncertain">uncertain</span>{% endif %}
+                <span class="conf">{{ '%.0f'|format(ex.confidence * 100) }}% confidence</span>
+                <p>{{ ex.text }}</p>
+            </li>
+            {% endfor %}
+        </ul>
+    </article>
+    {% endfor %}
+</section>
+
+{% if results.suggestions %}
+<section class="panel" aria-labelledby="suggest-heading">
+    <h2 id="suggest-heading">{{ results.suggestions.name }}</h2>
+    <p class="hint">{{ results.suggestions.total }} comments · {{ results.suggestions.blanks }} blank skipped</p>
+    {% if results.suggestions.comments %}
+    <ul class="examples">
+        {% for item in results.suggestions.comments %}
+        <li>
+            <span class="tag {{ item.label }}">{{ item.label }}</span>
+            {% if item.uncertain %}<span class="tag uncertain">uncertain</span>{% endif %}
+            <span class="conf">{{ '%.0f'|format(item.confidence * 100) }}% confidence</span>
+            <p>{{ item.text }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No additional suggestions were written.</p>
+    {% endif %}
+</section>
+{% endif %}
+
+<p class="model-note">
+    Predictions come from a TF-IDF model per category, with a short-phrase lexicon for answers such as “good” or “poor”.
+    Labels marked <span class="tag uncertain">uncertain</span> have model confidence below 50%.
+</p>
+<script id="results-data" type="application/json">{{ results|tojson }}</script>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='results.js') }}"></script>
+{% endblock %}

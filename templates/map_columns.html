@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Match columns{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>Match CSV columns to categories</h1>
+    <p class="lede">Some categories could not be matched automatically. Choose a column for each one, or leave it blank to skip it.</p>
+</section>
+<section class="panel">
+    <form action="{{ url_for('analyse_upload') }}" method="post">
+        <input type="hidden" name="upload_id" value="{{ upload_id }}">
+        <input type="hidden" name="Cate" value="{{ cate }}">
+        <ul class="map-list">
+            {% for cat in categories %}
+            <li>
+                <label for="map-{{ cat.id }}">{{ cat.name }}</label>
+                <select id="map-{{ cat.id }}" name="map_{{ cat.id }}">
+                    <option value="">Skip this category</option>
+                    {% for col in columns %}
+                    <option value="{{ col }}" {% if matched.get(cat.id) == col %}selected{% endif %}>{{ col }}</option>
+                    {% endfor %}
+                </select>
+                {% if cat.id in missing %}
+                <p class="hint">No automatic match</p>
+                {% else %}
+                <p class="hint">Suggested match</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        <button type="submit" class="btn btn-primary">Continue analysis</button>
+        <a class="btn btn-ghost" href="{{ url_for('display') }}">Cancel</a>
+    </form>
+</section>
+{% endblock %}

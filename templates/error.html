@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Could not analyse that file{% endblock %}
+{% block content %}
+<section class="error-card" role="alert">
+    <p class="eyebrow">Upload problem</p>
+    <h1>{{ message or "This file could not be analysed." }}</h1>
+    {% if hint %}
+    <p class="lede">{{ hint }}</p>
+    {% else %}
+    <p class="lede">Go back to the upload page, choose a UTF-8 CSV under 2 MB, and try again.</p>
+    {% endif %}
+    <a class="btn btn-primary" href="{{ url_for('display') }}">Try again</a>
+</section>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Upload feedback · Student Feedback Sentiment Analysis{% endblock %}
+{% block content %}
+<section class="hero">
+    <p class="eyebrow">Google Forms CSV · Naive Bayes successor models</p>
+    <h1>See how students feel about teaching, courses, labs, and more.</h1>
+    <p class="lede">Upload a form-response CSV. Each answer is classified as positive, neutral, or negative with a model trained per category.</p>
+</section>
+
+<section class="panel" aria-labelledby="upload-heading">
+    <h2 id="upload-heading">Upload responses</h2>
+    <form id="analyse-form" action="{{ url_for('analyse_upload') }}" method="post" enctype="multipart/form-data" novalidate>
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-controls="file-input">
+            <input type="file" id="file-input" name="file_name" accept=".csv,text/csv" required class="visually-hidden-file">
+            <p class="drop-title">Drag and drop a CSV here, or click to choose</p>
+            <p class="drop-hint">CSV only · 2 MB maximum · UTF-8</p>
+            <div id="file-meta" class="file-meta" hidden>
+                <p><strong id="file-name"></strong> <span id="file-size"></span></p>
+                <button type="button" id="file-remove" class="btn btn-ghost">Remove file</button>
+            </div>
+            <p id="file-error" class="form-error" role="alert" hidden></p>
+        </div>
+
+        <fieldset class="chips" aria-labelledby="cat-legend">
+            <legend id="cat-legend">Categories to analyse</legend>
+            <label class="chip">
+                <input type="radio" name="Cate" value="all" checked>
+                <span>All categories</span>
+            </label>
+            {% for cat in categories %}
+            <label class="chip">
+                <input type="radio" name="Cate" value="{{ cat.id }}">
+                <span>{{ cat.name }}</span>
+            </label>
+            {% endfor %}
+        </fieldset>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary">
+            <span class="btn-label">Analyse feedback</span>
+            <span class="btn-loading" hidden>Analysing…</span>
+        </button>
+    </form>
+</section>
+
+<section class="links-row">
+    <a href="{{ url_for('sample_file', filename='form.pdf') }}" target="_blank" rel="noopener">Sample feedback form (PDF)</a>
+    <a href="{{ url_for('sample_file', filename='Student-Feedback-Form.csv') }}" download>Sample CSV (anonymised)</a>
+</section>
+
+<section class="how" aria-labelledby="how-heading">
+    <h2 id="how-heading">How it works</h2>
+    <ol class="steps">
+        <li>
+            <h3>Export</h3>
+            <p>Download Google Form responses as a CSV. Columns for names, emails, and timestamps are ignored.</p>
+        </li>
+        <li>
+            <h3>Match</h3>
+            <p>Each of the six categories is matched to the best column. If a match is unclear, you map it yourself.</p>
+        </li>
+        <li>
+            <h3>Classify</h3>
+            <p>Blank cells are skipped. The rest are cleaned, classified, and summarised with charts you can print or download.</p>
+        </li>
+    </ol>
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='upload.js') }}"></script>
+{% endblock %}
